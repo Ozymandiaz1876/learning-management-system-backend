@@ -4,6 +4,9 @@ import {
   MongooseModuleOptions,
   MongooseOptionsFactory,
 } from '@nestjs/mongoose';
+import { QuestionModel } from 'src/questions/questions.model';
+import { ResponseModel } from 'src/responses/reposnse.model';
+import { TestModel } from 'src/tests/tests.model';
 import { UserModel } from 'src/users/users.model';
 
 @Injectable()
@@ -18,6 +21,9 @@ export class MongooseConfigService implements MongooseOptionsFactory {
       pass: this.configService.get('database.password', { infer: true }),
       connectionFactory: (connection) => {
         connection.model('User', UserModel);
+        connection.model('Question', QuestionModel);
+        connection.model('Test', TestModel);
+        connection.model('responses', ResponseModel);
         return connection;
       },
     };
