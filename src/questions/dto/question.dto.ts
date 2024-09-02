@@ -7,11 +7,12 @@ import {
   IsOptional,
 } from 'class-validator';
 
-class OptionDto {
+export class OptionDto {
   @IsString()
   @IsOptional()
   text?: string;
 
+  @IsString()
   @IsOptional()
   isCorrect?: boolean;
 }
@@ -29,6 +30,5 @@ export class QuestionDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => OptionDto)
-  @IsOptional()
-  options?: OptionDto[];
+  options: OptionDto[];
 }

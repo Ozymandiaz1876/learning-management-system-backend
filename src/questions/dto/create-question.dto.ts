@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsInt,
   IsNotEmpty,
   IsString,
@@ -12,6 +13,7 @@ export class OptionDto {
   @IsNotEmpty()
   text!: string;
 
+  @IsBoolean()
   @IsNotEmpty()
   isCorrect!: boolean;
 }

@@ -64,11 +64,7 @@ export class AuthService {
       email: user.email,
     });
 
-    return {
-      token,
-      tokenExpires,
-      user,
-    };
+    return this.toLoginReponseDto(token, tokenExpires, user);
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<LoginResponseDto> {
@@ -108,6 +104,26 @@ export class AuthService {
     return {
       token,
       tokenExpires,
+    };
+  }
+  toLoginReponseDto(
+    token: string,
+    tokenExpires: number,
+    userData: User,
+  ): LoginResponseDto {
+    const { _id, email, firstName, lastName, role, status } = userData;
+
+    return {
+      token,
+      tokenExpires,
+      user: {
+        id: _id.toString(),
+        email,
+        firstName,
+        lastName,
+        role,
+        status,
+      },
     };
   }
 }

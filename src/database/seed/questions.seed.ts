@@ -7,7 +7,7 @@ export class QuestionsSeed {
   constructor(private readonly questionsService: QuestionsService) {}
 
   @Command({
-    command: 'seed:questions',
+    command: 'create:questions',
     describe: 'Seed questions',
   })
   async create() {

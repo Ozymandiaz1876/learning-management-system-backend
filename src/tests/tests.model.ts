@@ -1,6 +1,7 @@
 import { v4 } from 'uuid';
 import { SchemaFactory, Prop, Schema } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
+import { User } from 'src/users/users.model';
 
 class AdaptiveAlgorithm {
   @Prop({
@@ -49,7 +50,7 @@ export class Test {
   public uniqueUrlId!: string;
 
   @Prop({
-    ref: 'User',
+    ref: User.name,
     required: true,
     type: mongoose.Schema.Types.ObjectId,
   })

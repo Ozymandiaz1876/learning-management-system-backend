@@ -7,7 +7,6 @@ import {
   Param,
   Body,
   UseGuards,
-  Req,
 } from '@nestjs/common';
 import { TestsService } from './tests.service';
 import { CreateTestDto } from './dto/create-test.dto';
@@ -17,6 +16,8 @@ import { Roles } from '../auth/decorators/roles.decorators';
 import { RoleGuard } from '../auth/guards/role.guard';
 import { UserRolesEnum } from '../constants/enums/UserRoles.enum';
 import { TestResultsService } from 'src/results/results.service';
+import { PayloadData } from 'src/auth/decorators/JwtPayload.decorator';
+import { User } from 'src/users/users.model';
 
 @Controller('tests')
 export class TestsController {
@@ -74,18 +75,24 @@ export class TestsController {
 
   @Post(':testId/start')
   @UseGuards(JwtAuthGuard)
-  async startTest(@Param('testId') testId: string, @Req() req: any) {
-    const userId = req.user.userId;
-    return this.testsService.startTest(userId, testId);
+  async startTest(@Param('testId') testId: string, @PayloadData() data: User) {
+    const userId = data._id?.toString();
+    return this.testsService.startTest({ userId, testId });
   }
 
-  //   @Post(':testId/questions/:questionId/answer')
-  //   @UseGuards(JwtAuthGuard)
-  //   submitAnswer(
-  //     @Param('testId') testId: string,
-  //     @Param('questionId') questionId: string,
-  //     @Body() answerDto: { answer: string },
-  //   ) {
-  //     // Add logic to submit answer and get the next question
-  //   }
+  @Post(':testId/questions/:questionId/answer')
+  @UseGuards(JwtAuthGuard)
+  async submitAnswer(
+    @Param('testId') testId: string,
+    @Param('questionId') questionId: string,
+    @Body() answerDto: { answer: string },
+    @PayloadData() data: User,
+  ) {
+    return this.testsService.submitAnswer({
+      testId,
+      questionId,
+      answer: answerDto.answer,
+      userId: data._id?.toString(),
+    });
+  }
 }

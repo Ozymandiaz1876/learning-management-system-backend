@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { TestResult } from './results.model';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 
 @Injectable()
 export class TestResultsRepository {
@@ -18,7 +18,14 @@ export class TestResultsRepository {
     testId: string,
     userId: string,
   ): Promise<TestResult | null> {
-    return this.testResultModel.findOne({ testId, userId }).exec();
+    console.log(testId, userId);
+
+    return this.testResultModel
+      .findOne({
+        testId: new mongoose.Types.ObjectId(testId),
+        userId: new mongoose.Types.ObjectId(userId),
+      })
+      .exec();
   }
 
   async create(testResult: Partial<TestResult>): Promise<TestResult> {

@@ -1,9 +1,32 @@
-import { User } from '../../users/users.model';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
+
+class sendingUser {
+  @IsString()
+  public id: string;
+
+  @IsString()
+  public firstName: string;
+
+  @IsString()
+  public lastName: string;
+
+  @IsEmail()
+  public email: string;
+
+  @IsString()
+  @IsOptional()
+  public role?: string;
+
+  @IsString()
+  @IsOptional()
+  public status?: string;
+}
 
 export class LoginResponseDto {
-  token: string;
+  @IsString()
+  public token: string;
 
-  tokenExpires: number;
+  public tokenExpires: number;
 
-  user: User;
+  public user: sendingUser;
 }

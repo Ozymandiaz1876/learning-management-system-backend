@@ -27,24 +27,19 @@ export class QuestionsController {
   async create(
     @Body() createQuestionDto: CreateQuestionDto,
   ): Promise<QuestionDto> {
-    const question = await this.questionsService.create(createQuestionDto);
-    return this.questionsService.toQuestionDto(question);
+    return this.questionsService.create(createQuestionDto);
   }
 
   @Get()
   @Roles(UserRolesEnum.ADMIN)
   async findAll(): Promise<QuestionDto[]> {
-    const questions = await this.questionsService.findAll();
-    return questions.map((question) =>
-      this.questionsService.toQuestionDto(question),
-    );
+    return await this.questionsService.findAll();
   }
 
   @Get(':id')
   @Roles(UserRolesEnum.ADMIN)
   async findOne(@Param('id') id: string): Promise<QuestionDto> {
-    const question = await this.questionsService.findOne(id);
-    return this.questionsService.toQuestionDto(question);
+    return this.questionsService.findOne(id);
   }
 
   @Put(':id')
@@ -53,8 +48,7 @@ export class QuestionsController {
     @Param('id') id: string,
     @Body() updateQuestionDto: UpdateQuestionDto,
   ): Promise<QuestionDto> {
-    const question = await this.questionsService.update(id, updateQuestionDto);
-    return this.questionsService.toQuestionDto(question);
+    return this.questionsService.update(id, updateQuestionDto);
   }
 
   @Delete(':id')

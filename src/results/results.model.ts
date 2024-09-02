@@ -2,7 +2,7 @@ import { Question } from '../questions/questions.model';
 import { SchemaFactory, Prop, Schema } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 
-class TestResponse {
+export class TestResponse {
   @Prop({
     ref: Question.name,
     required: true,
@@ -21,6 +21,9 @@ class TestResponse {
   timestamps: true,
 })
 export class TestResult {
+  @Prop({ required: true, auto: true })
+  public _id!: mongoose.Types.ObjectId;
+
   @Prop({
     ref: 'Test',
     required: true,
@@ -42,7 +45,7 @@ export class TestResult {
   public completed!: boolean;
 
   @Prop({ type: () => [TestResponse], _id: false })
-  public responses!: mongoose.Types.ObjectId[];
+  public responses!: TestResponse[];
 
   @Prop({ default: Date.now })
   public dateTaken!: Date;

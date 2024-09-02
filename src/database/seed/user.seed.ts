@@ -9,7 +9,7 @@ export class UserSeed {
 
   @Command({
     command: 'create:user',
-    describe: 'create a user',
+    describe: 'creates a user',
   })
   async create() {
     const user = await this.userService.create({
@@ -24,7 +24,7 @@ export class UserSeed {
 
   @Command({
     command: 'create:admin',
-    describe: 'create an admin',
+    describe: 'creates an admin',
   })
   async createAdmin() {
     const user = await this.userService.create({

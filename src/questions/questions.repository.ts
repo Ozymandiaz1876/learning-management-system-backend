@@ -17,8 +17,12 @@ export class QuestionsRepository {
     return this.questionModel.create(createQuestionDto);
   }
 
-  createMany(questionsToInsert: CreateQuestionDto[]) {
-    return this.questionModel.insertMany(questionsToInsert);
+  async createMany(
+    questionsToInsert: CreateQuestionDto[],
+  ): Promise<Question[]> {
+    return this.questionModel
+      .insertMany(questionsToInsert)
+      .then((result) => result.map((doc) => doc.toObject()));
   }
 
   async findAll(): Promise<Question[]> {
@@ -28,6 +32,10 @@ export class QuestionsRepository {
   async findById(id: string): Promise<Question | null> {
     const objectId = new ObjectId(id);
     return this.questionModel.findById(objectId).exec();
+  }
+
+  findByDifficulty(difficulty: number): Question[] | PromiseLike<Question[]> {
+    return this.questionModel.find({ difficulty }).exec();
   }
 
   async update(
