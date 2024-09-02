@@ -17,6 +17,10 @@ export class QuestionsRepository {
     return this.questionModel.create(createQuestionDto);
   }
 
+  createMany(questionsToInsert: CreateQuestionDto[]) {
+    return this.questionModel.insertMany(questionsToInsert);
+  }
+
   async findAll(): Promise<Question[]> {
     return this.questionModel.find().exec();
   }

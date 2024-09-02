@@ -15,6 +15,10 @@ export class QuestionsService {
     return newlyCreatedQuestion;
   }
 
+  createMany(questionsToInsert: CreateQuestionDto[]) {
+    return this.questionsRepository.createMany(questionsToInsert);
+  }
+
   async findAll(): Promise<Question[]> {
     return this.questionsRepository.findAll();
   }

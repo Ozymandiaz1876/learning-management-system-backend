@@ -6,7 +6,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { User } from '../../users/users.model';
 
 export class OptionDto {
   @IsString()
@@ -32,5 +31,5 @@ export class CreateQuestionDto {
   difficulty!: number;
 
   @IsNotEmpty()
-  createdBy!: User; // Assuming the `createdBy` will be a `User` object or ID
+  createdBy!: string;
 }
