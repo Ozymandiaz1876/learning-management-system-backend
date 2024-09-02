@@ -2,33 +2,46 @@ import {
   HttpStatus,
   Injectable,
   UnprocessableEntityException,
-  BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './users.model';
 import { UpdateUserDto } from './dto/update-user.dto';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { UsersRepository } from './users.repository';
 import { UserRolesEnum, UserStatusEnum } from 'src/constants/enums';
-import { LoginUserDto } from './dto/login-user.dto';
 import { UserDto } from './dto/user.dto';
-import { JwtService } from '@nestjs/jwt';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private readonly usersRepository: UsersRepository,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async create(user: CreateUserDto): Promise<User> {
     const incomingPayloadClone = { ...user };
+
+    if (!incomingPayloadClone.email) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: { email: 'emailRequired' },
+      });
+    }
+
+    if (!incomingPayloadClone.password) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: { password: 'passwordRequired' },
+      });
+    }
+    mongoose.set('debug', true);
 
     // Check if email already exists
     const userObject = await this.usersRepository.findByEmail(
       incomingPayloadClone.email,
     );
+
+    console.log(userObject);
+
     if (userObject) {
       throw new UnprocessableEntityException({
         status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -94,25 +107,5 @@ export class UsersService {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
     return true;
-  }
-
-  async login(userData: LoginUserDto): Promise<{ token: string }> {
-    const user = await this.usersRepository.findByEmail(userData.email);
-    if (!user) {
-      throw new BadRequestException('Invalid credentials');
-    }
-
-    const isPasswordValid = await bcrypt.compare(
-      userData.password,
-      user.password,
-    );
-    if (!isPasswordValid) {
-      throw new BadRequestException('Invalid credentials');
-    }
-
-    const payload = { email: user.email, sub: user._id };
-    return {
-      token: this.jwtService.sign(payload),
-    };
   }
 }

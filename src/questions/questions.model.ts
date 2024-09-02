@@ -1,38 +1,36 @@
-import { prop, getModelForClass, Ref, mongoose } from '@typegoose/typegoose';
-import { User } from '../users/users.model';
+import mongoose from 'mongoose';
+import { SchemaFactory, Prop, Schema } from '@nestjs/mongoose';
 
 class Option {
-  @prop({ required: true })
+  @Prop({ required: true })
   public text!: string;
 
-  @prop({ required: true })
+  @Prop({ required: true })
   public isCorrect!: boolean;
 }
 
+@Schema({
+  timestamps: true,
+})
 export class Question {
-  @prop({
-    type: String,
-    default: () => new mongoose.Types.ObjectId().toHexString(),
-  })
-  public _id?: string;
+  @Prop({ auto: true })
+  public _id: mongoose.Schema.Types.ObjectId;
 
-  @prop({ required: true })
+  @Prop({ required: true })
   public questionText!: string;
 
-  @prop({ type: () => [Option], required: true, _id: false })
+  @Prop({ type: () => [Option], required: true, _id: false })
   public options!: Option[];
 
-  @prop({ required: true })
+  @Prop({ required: true })
   public difficulty!: number;
 
-  @prop({ ref: () => User, required: true })
-  public createdBy!: Ref<User>;
-
-  @prop({ default: Date.now })
-  public createdAt?: Date;
-
-  @prop()
-  public updatedAt?: Date;
+  @Prop({
+    ref: 'User',
+    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+  })
+  public createdBy!: mongoose.Types.ObjectId;
 }
 
-export const QuestionModel = getModelForClass(Question);
+export const QuestionModelSchema = SchemaFactory.createForClass(Question);

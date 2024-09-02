@@ -1,15 +1,11 @@
-import { IsString, IsOptional, IsArray } from 'class-validator';
-import { Types } from 'mongoose';
+import { IsString, IsOptional } from 'class-validator';
 
 export class UpdateTestDto {
   @IsString()
   @IsOptional()
-  public name?: string;
+  public title?: string;
 
-  @IsArray()
+  @IsString()
   @IsOptional()
-  public questions?: Types.ObjectId[];
-
-  @IsOptional()
-  public results?: any[];
+  public description?: string;
 }

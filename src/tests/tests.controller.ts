@@ -7,18 +7,23 @@ import {
   Param,
   Body,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { TestsService } from './tests.service';
 import { CreateTestDto } from './dto/create-test.dto';
 import { UpdateTestDto } from './dto/update-test.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RoleGuard } from '../auth/role.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Roles } from '../auth/decorators/roles.decorators';
+import { RoleGuard } from '../auth/guards/role.guard';
 import { UserRolesEnum } from '../constants/enums/UserRoles.enum';
+import { TestResultsService } from 'src/results/results.service';
 
 @Controller('tests')
 export class TestsController {
-  constructor(private readonly testsService: TestsService) {}
+  constructor(
+    private readonly testsService: TestsService,
+    private readonly testResultsService: TestResultsService,
+  ) {}
 
   // Admin Endpoints
   @Get()
@@ -26,13 +31,6 @@ export class TestsController {
   @Roles(UserRolesEnum.ADMIN)
   getAllTests() {
     return this.testsService.findAll();
-  }
-
-  @Get(':id')
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(UserRolesEnum.ADMIN)
-  getTestById(@Param('id') id: string) {
-    return this.testsService.findOne(id);
   }
 
   @Post()
@@ -56,25 +54,38 @@ export class TestsController {
     return this.testsService.remove(id);
   }
 
-  // User Endpoints
-  @Get('unique/:uniqueUrl')
-  getTestByUniqueUrl(@Param('uniqueUrl') uniqueUrl: string) {
-    return this.testsService.findByUniqueUrl(uniqueUrl);
+  @Get('id/:testId')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRolesEnum.ADMIN)
+  async getTestDataAndResultsByTestId(@Param('testId') testId: string) {
+    const test = await this.testsService.findOne(testId);
+
+    const results =
+      await this.testResultsService.fetchAllResultsForTest(testId);
+    return { test, results };
+  }
+
+  // User Endpoint
+  @Get(':uniqueUrlId')
+  @UseGuards(JwtAuthGuard)
+  getTestDataByUniqueUrlId(@Param('uniqueUrlId') uniqueUrlId: string) {
+    return this.testsService.getTestDataByUniqueUrlId(uniqueUrlId);
   }
 
   @Post(':testId/start')
   @UseGuards(JwtAuthGuard)
-  startTest(@Param('testId') testId: string) {
-    // Add logic to start the test based on testId
+  async startTest(@Param('testId') testId: string, @Req() req: any) {
+    const userId = req.user.userId;
+    return this.testsService.startTest(userId, testId);
   }
 
-  @Post(':testId/questions/:questionId/answer')
-  @UseGuards(JwtAuthGuard)
-  submitAnswer(
-    @Param('testId') testId: string,
-    @Param('questionId') questionId: string,
-    @Body() answerDto: { answer: string },
-  ) {
-    // Add logic to submit answer and get the next question
-  }
+  //   @Post(':testId/questions/:questionId/answer')
+  //   @UseGuards(JwtAuthGuard)
+  //   submitAnswer(
+  //     @Param('testId') testId: string,
+  //     @Param('questionId') questionId: string,
+  //     @Body() answerDto: { answer: string },
+  //   ) {
+  //     // Add logic to submit answer and get the next question
+  //   }
 }

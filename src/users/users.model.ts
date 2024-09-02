@@ -1,73 +1,33 @@
-import {
-  prop,
-  getModelForClass,
-  modelOptions,
-  index,
-  mongoose,
-  Ref,
-} from '@typegoose/typegoose';
-import { Question } from 'src/questions/questions.model';
-import { Test } from 'src/tests/tests.model';
+import { TestResult } from 'src/results/results.model';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 
-class TestResult {
-  @prop({ ref: () => Test })
-  public testId!: Ref<Test>;
-
-  @prop()
-  public score!: number;
-
-  @prop({ default: false })
-  public completed!: boolean;
-
-  @prop({
-    type: () => [
-      {
-        questionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Question' },
-        answer: String,
-        correct: Boolean,
-      },
-    ],
-    _id: false,
-  })
-  public responses!: {
-    questionId: Ref<Question>;
-    answer: string;
-    correct: boolean;
-  }[];
-
-  @prop({ default: Date.now })
-  public dateTaken!: Date;
-}
-
-@index({ email: 1 }, { unique: true })
-@modelOptions({
-  schemaOptions: {
-    timestamps: true,
-  },
+@Schema({
+  timestamps: true,
 })
 export class User {
-  @prop({ auto: true })
+  @Prop({ auto: true })
   public _id: mongoose.Schema.Types.ObjectId;
 
-  @prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true })
   public email!: string;
 
-  @prop({ required: true })
+  @Prop({ required: true })
   firstName: string;
 
-  @prop({ required: true })
+  @Prop({ required: true })
   lastName: string;
 
-  @prop({ required: true })
+  @Prop({ required: true })
   public password!: string;
 
-  @prop({ ref: 'Role' })
+  @Prop()
   public role?: string;
 
-  @prop({ ref: 'Status' })
+  @Prop()
   public status?: string;
 
-  @prop({ type: () => [TestResult], _id: false })
-  public testsTaken?: TestResult[];
+  @Prop({ ref: TestResult.name, type: [mongoose.Schema.Types.ObjectId] })
+  public testResults?: mongoose.Types.ObjectId[];
 }
-export const UserModel = getModelForClass(User);
+export const UserModelSchema = SchemaFactory.createForClass(User);

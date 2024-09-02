@@ -1,5 +1,5 @@
 export type DatabaseConfig = {
-  url?: string;
+  url: string;
   host?: string;
   port?: number;
   password?: string;

@@ -4,28 +4,20 @@ import {
   MongooseModuleOptions,
   MongooseOptionsFactory,
 } from '@nestjs/mongoose';
-import { QuestionModel } from 'src/questions/questions.model';
-import { ResponseModel } from 'src/responses/reposnse.model';
-import { TestModel } from 'src/tests/tests.model';
-import { UserModel } from 'src/users/users.model';
+import { AllConfigType } from '../config/config.type';
 
 @Injectable()
 export class MongooseConfigService implements MongooseOptionsFactory {
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService<AllConfigType>) {}
 
   createMongooseOptions(): MongooseModuleOptions {
     return {
-      uri: this.configService.get('database.url', { infer: true }),
+      uri: 'mongodb://localhost:27017/learning-management-system',
+      //   uri: this.configService.get('database.url', { infer: true }),
       dbName: this.configService.get('database.name', { infer: true }),
       user: this.configService.get('database.username', { infer: true }),
       pass: this.configService.get('database.password', { infer: true }),
-      connectionFactory: (connection) => {
-        connection.model('User', UserModel);
-        connection.model('Question', QuestionModel);
-        connection.model('Test', TestModel);
-        connection.model('responses', ResponseModel);
-        return connection;
-      },
+      lazyConnection: false,
     };
   }
 }

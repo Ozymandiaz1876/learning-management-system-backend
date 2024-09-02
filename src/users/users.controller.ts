@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Put,
   Delete,
   Param,
@@ -9,7 +8,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Roles } from '../auth/decorators/roles.decorators';
@@ -55,26 +53,5 @@ export class UsersController {
   async deleteUser(@Param('id') id: string): Promise<{ deleted: boolean }> {
     const deletionStatus = await this.usersService.remove(id);
     return { deleted: deletionStatus };
-  }
-
-  // User Endpoints
-  @Post('register')
-  async registerUser(@Body() createUserDto: CreateUserDto): Promise<UserDto> {
-    const user = await this.usersService.create(createUserDto);
-    return this.usersService.toUserDto(user);
-  }
-
-  @Post('login')
-  loginUser(
-    @Body() loginUserDto: { email: string; password: string },
-  ): Promise<{ token: string }> {
-    return this.usersService.login(loginUserDto);
-  }
-
-  @Get('profile/me')
-  @UseGuards(JwtAuthGuard)
-  async getUserProfile(@Param('id') id: string): Promise<UserDto> {
-    const me = await this.usersService.findOne(id);
-    return this.usersService.toUserDto(me);
   }
 }

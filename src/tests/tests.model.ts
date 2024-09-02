@@ -1,59 +1,68 @@
-import { prop, getModelForClass, Ref, mongoose } from '@typegoose/typegoose';
-import { User } from '../users/users.model';
 import { v4 } from 'uuid';
+import { SchemaFactory, Prop, Schema } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 
 class AdaptiveAlgorithm {
-  @prop({
+  @Prop({
     required: true,
   })
   public initialDifficulty!: number;
 
-  @prop({ required: true })
+  @Prop({ required: true })
   public correctAdjustment!: number;
 
-  @prop({ required: true })
+  @Prop({ required: true })
   public incorrectAdjustment!: number;
 
-  @prop({ required: true })
+  @Prop({ required: true })
   public maxQuestions!: number;
 
-  @prop({ required: true })
+  @Prop({ required: true })
   public minDifficulty!: number;
 
-  @prop({ required: true })
+  @Prop({ required: true })
   public maxDifficulty!: number;
 
-  @prop({ required: true })
+  @Prop({ required: true })
   public consecutiveCorrectToEnd!: number;
 }
 
+@Schema({
+  timestamps: true,
+})
 export class Test {
-  @prop({
-    type: String,
-    default: () => new mongoose.Types.ObjectId().toHexString(),
+  @Prop({
+    auto: true,
   })
-  public _id?: string;
+  public _id!: mongoose.Schema.Types.ObjectId;
 
-  @prop({ required: true })
+  @Prop({ required: true, unique: true })
   public title!: string;
 
-  @prop({ required: true })
+  @Prop({ required: true })
   public description!: string;
 
-  @prop({ required: true, unique: true, default: v4() })
+  @Prop({
+    required: true,
+    default: v4(),
+  })
   public uniqueUrlId!: string;
 
-  @prop({ ref: () => User, required: true })
-  public createdBy!: Ref<User>;
+  @Prop({
+    ref: 'User',
+    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+  })
+  public createdBy!: mongoose.Types.ObjectId;
 
-  @prop({ required: true, _id: false })
+  @Prop({ required: true, _id: false })
   public adaptiveAlgorithm!: AdaptiveAlgorithm;
 
-  @prop({ default: Date.now })
+  @Prop({ default: Date.now })
   public createdAt?: Date;
 
-  @prop()
+  @Prop({ default: Date.now })
   public updatedAt?: Date;
 }
 
-export const TestModel = getModelForClass(Test);
+export const TestModelSchema = SchemaFactory.createForClass(Test);

@@ -1,5 +1,4 @@
 import { IsString } from 'class-validator';
-import { Types } from 'mongoose';
 
 export class CreateTestDto {
   @IsString()
@@ -7,9 +6,6 @@ export class CreateTestDto {
 
   @IsString()
   public description: string;
-
-  @IsString()
-  public uniqueUrlId: string;
 
   @IsString()
   public createdBy: string;
