@@ -19,7 +19,7 @@ export class AuthController {
   }
 
   @Post('/register')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   async register(
     @Body() createUserDto: AuthRegisterLoginDto,
   ): Promise<LoginResponseDto> {

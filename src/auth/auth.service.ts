@@ -72,9 +72,9 @@ export class AuthService {
       ...dto,
       email: dto.email,
     });
-    return this.validateLogin({
+    return await this.validateLogin({
       email: user.email,
-      password: user.password,
+      password: dto.password,
     });
   }
 

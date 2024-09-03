@@ -27,8 +27,6 @@ export class TestsService {
   ) {}
 
   async create(createTestDto: CreateTestDto): Promise<Test> {
-    console.log(createTestDto);
-
     const existingTest = await this.testsRepository.findByTitle(
       createTestDto.title,
     );
@@ -58,21 +56,20 @@ export class TestsService {
       throw new NotFoundException('User not found');
     }
 
-    // Check if test has already started
+    // Check if test has already started, if not create a new test for user.
     const existingResult =
       await this.testResultsRepository.findByTestIdAndUserId(testId, userId);
-    if (existingResult) {
-      throw new UnprocessableEntityException('Test already started');
-    }
 
-    await this.testResultsRepository.create({
-      testId: new mongoose.Types.ObjectId(testId),
-      userId: new mongoose.Types.ObjectId(userId),
-      score: 0,
-      completed: false,
-      responses: [],
-      dateTaken: new Date(),
-    });
+    if (existingResult && existingResult.completed) {
+      await this.testResultsRepository.create({
+        testId: new mongoose.Types.ObjectId(testId),
+        userId: new mongoose.Types.ObjectId(userId),
+        score: 0,
+        completed: false,
+        responses: [],
+        dateTaken: new Date(),
+      });
+    }
 
     const questions = await this.questionsService.findByDifficulty(
       test.adaptiveAlgorithm.initialDifficulty,

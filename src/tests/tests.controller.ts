@@ -18,6 +18,7 @@ import { UserRolesEnum } from '../constants/enums/UserRoles.enum';
 import { TestResultsService } from 'src/results/results.service';
 import { PayloadData } from 'src/auth/decorators/JwtPayload.decorator';
 import { User } from 'src/users/users.model';
+import { base64Decode } from 'src/utils';
 
 @Controller('tests')
 export class TestsController {
@@ -70,14 +71,18 @@ export class TestsController {
   @Get(':uniqueUrlId')
   @UseGuards(JwtAuthGuard)
   getTestDataByUniqueUrlId(@Param('uniqueUrlId') uniqueUrlId: string) {
-    return this.testsService.getTestDataByUniqueUrlId(uniqueUrlId);
+    // some issue with express middleware coming after these requests, and not properly decoding
+    const uniqueUrlIdDecoded = base64Decode(uniqueUrlId);
+
+    return this.testsService.getTestDataByUniqueUrlId(uniqueUrlIdDecoded);
   }
 
   @Post(':testId/start')
   @UseGuards(JwtAuthGuard)
   async startTest(@Param('testId') testId: string, @PayloadData() data: User) {
     const userId = data._id?.toString();
-    return this.testsService.startTest({ userId, testId });
+    const firstQuestion = await this.testsService.startTest({ userId, testId });
+    return firstQuestion;
   }
 
   @Post(':testId/questions/:questionId/answer')

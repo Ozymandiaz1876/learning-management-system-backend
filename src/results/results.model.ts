@@ -21,7 +21,7 @@ export class TestResponse {
   timestamps: true,
 })
 export class TestResult {
-  @Prop({ required: true, auto: true })
+  @Prop({ auto: true })
   public _id!: mongoose.Types.ObjectId;
 
   @Prop({

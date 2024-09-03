@@ -18,8 +18,6 @@ export class TestResultsRepository {
     testId: string,
     userId: string,
   ): Promise<TestResult | null> {
-    console.log(testId, userId);
-
     return this.testResultModel
       .findOne({
         testId: new mongoose.Types.ObjectId(testId),
